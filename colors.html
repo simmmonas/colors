@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Color Palette</title>
+    <style>
+      .box {
+        width: 14em;
+        height: 14em;
+      }
+
+      .palette {
+        display: flex;
+        padding: 3em;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="harmonypick">Choose a harmony:</label>
+
+    <select id="harmonypick">
+      <option value="analogous">Analogous</option>
+      <option value="monochromatic">Monochromatic</option>
+      <option value="triad">Triad</option>
+      <option value="complementary">Complementary</option>
+      <option value="compound">Compound</option>
+      <option value="shades">Shades</option>
+    </select>
+
+    <input type="color" id="colorpick" />
+
+    <div class="palette">
+      <div class="box" id="color1"></div>
+      <div class="box" id="color2"></div>
+      <div class="box" id="color3base"></div>
+      <div class="box" id="color4"></div>
+      <div class="box" id="color5"></div>
+    </div>
+
+    <script>
+      let color1 = document.getElementById("color1");
+      let color2 = document.getElementById("color2");
+      let color3base = document.getElementById("color3base");
+      let color4 = document.getElementById("color4");
+      let color5 = document.getElementById("color5");
+      let defaultColor = "#0000ff";
+      let colorpick = document.querySelector("#colorpick");
+      let harmonypick = document.querySelector("#harmonypick");
+
+      window.addEventListener("load", startup, false);
+      function startup() {
+        colorpick.value = defaultColor;
+        color1.style.backgroundColor = defaultColor;
+        color2.style.backgroundColor = defaultColor;
+        color3base.style.backgroundColor = defaultColor;
+        color4.style.backgroundColor = defaultColor;
+        color5.style.backgroundColor = defaultColor;
+
+        colorpick.addEventListener("input", updateFirst, false);
+        // colorpick.addEventListener("change", updateAll, false);
+
+        harmonypick.addEventListener("input", updateFirst, false);
+        //colorpick.select();
+      }
+
+      function updateFirst(event) {
+        //let color3base = document.querySelector("#color3base");
+        color3base.style.backgroundColor = colorpick.value;
+
+        let baseR = hexToRgb(colorpick.value).r;
+        let baseG = hexToRgb(colorpick.value).g;
+        let baseB = hexToRgb(colorpick.value).b;
+
+        let baseH = rgbToHSL(baseR, baseG, baseB).h;
+        let baseS = rgbToHSL(baseR, baseG, baseB).s;
+        let baseL = rgbToHSL(baseR, baseG, baseB).l;
+
+        if (harmonypick.value === "analogous") {
+          analogous(baseH, baseS, baseL);
+        } else if (harmonypick.value === "monochromatic") {
+          monochromatic(baseH, baseS, baseL);
+        } else if (harmonypick.value === "triad") {
+          triad(baseH, baseS, baseL);
+        } else if (harmonypick.value === "shades") {
+          shades(baseH, baseS, baseL);
+        } else if (harmonypick.value === "complementary") {
+          complementary(baseH, baseS, baseL);
+        } else if (harmonypick.value === "compound") {
+          compound(baseH, baseS, baseL);
+        }
+      }
+
+      function hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result
+          ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+            }
+          : null;
+      }
+
+      console.log(hexToRgb("#0000ff"));
+
+      function rgbToHSL(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let h, s, l;
+
+        const min = Math.min(r, g, b);
+        const max = Math.max(r, g, b);
+
+        if (max === min) {
+          h = 0;
+        } else if (max === r) {
+          h = 60 * (0 + (g - b) / (max - min));
+        } else if (max === g) {
+          h = 60 * (2 + (b - r) / (max - min));
+        } else if (max === b) {
+          h = 60 * (4 + (r - g) / (max - min));
+        }
+
+        if (h < 0) {
+          h = h + 360;
+        }
+
+        l = (min + max) / 2;
+
+        if (max === 0 || min === 1) {
+          s = 0;
+        } else {
+          s = (max - l) / Math.min(l, 1 - l);
+        }
+        // multiply s and l by 100 to get the value in percent, rather than [0,1]
+        s *= 100;
+        l *= 100;
+
+        // console.log("hsl(%f,%f%,%f%)", h, s, l); // just for testing
+        return {
+          h: h,
+          s: s,
+          l: l
+        };
+      }
+
+      function analogous(h, s, l) {
+        let color1h = h + 25;
+        let color2h = h - 50;
+        let color4h = h + 34;
+        let color5h = h - 25;
+
+        color1.style.backgroundColor =
+          "hsl(" + color1h + ", " + s + "%, " + l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + color2h + ", " + s + "%, " + l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + color4h + ", " + s + "%, " + l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + color5h + ", " + s + "%, " + l + "%)";
+      }
+      function monochromatic(h, s, l) {
+        let color1l = l + 25;
+        let color2l = l - 50;
+        let color4l = l + 34;
+        let color5l = l - 25;
+
+        color1.style.backgroundColor =
+          "hsl(" + h + ", " + s + "%, " + color1l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + h + ", " + s + "%, " + color2l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + h + ", " + s + "%, " + color4l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + h + ", " + s + "%, " + color5l + "%)";
+      }
+
+      function triad(h, s, l) {
+        let color1h = h + 60;
+        let color2h = h - 120;
+        let color4h = h - 60;
+        let color5h = h + 120;
+
+        color1.style.backgroundColor =
+          "hsl(" + color1h + ", " + s + "%, " + l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + color2h + ", " + s + "%, " + l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + color4h + ", " + s + "%, " + l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + color5h + ", " + s + "%, " + l + "%)";
+      }
+      function shades(h, s, l) {
+        let color1s = s + 5;
+        let color2s = s + 60;
+        let color4s = s + 34;
+        let color5s = s - 25;
+
+        color1.style.backgroundColor =
+          "hsl(" + h + ", " + color1s + "%, " + l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + h + ", " + color2s + "%, " + l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + h + ", " + color4s + "%, " + l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + h + ", " + color5s + "%, " + l + "%)";
+      }
+
+      function complementary(h, s, l) {
+        let color1h = h + 90;
+        let color2h = h + 180;
+        let color4h = h - 180;
+        let color5h = h - 90;
+
+        color1.style.backgroundColor =
+          "hsl(" + color1h + ", " + s + "%, " + l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + color2h + ", " + s + "%, " + l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + color4h + ", " + s + "%, " + l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + color5h + ", " + s + "%, " + l + "%)";
+      }
+      function compound(h, s, l) {
+        let color1h = h + 25;
+        let color2h = h + 90;
+        let color4h = h - 180;
+        let color5h = h - 25;
+
+        color1.style.backgroundColor =
+          "hsl(" + color1h + ", " + s + "%, " + l + "%)";
+        color2.style.backgroundColor =
+          "hsl(" + color2h + ", " + s + "%, " + l + "%)";
+        color4.style.backgroundColor =
+          "hsl(" + color4h + ", " + s + "%, " + l + "%)";
+        color5.style.backgroundColor =
+          "hsl(" + color5h + ", " + s + "%, " + l + "%)";
+      }
+    </script>
+  </body>
+</html>
