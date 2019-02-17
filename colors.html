@@ -18,7 +18,7 @@
     </style>
   </head>
   <body>
-    <label for="harmonypick">Choose a harmony:</label>
+    <label for="harmonypick">Choose a harmony and pick a color:</label>
 
     <select id="harmonypick">
       <option value="analogous">Analogous</option>
@@ -45,7 +45,7 @@
       let color3base = document.getElementById("color3base");
       let color4 = document.getElementById("color4");
       let color5 = document.getElementById("color5");
-      let defaultColor = "#0000ff";
+      let defaultColor = "#ffceb2";
       let colorpick = document.querySelector("#colorpick");
       let harmonypick = document.querySelector("#harmonypick");
 
@@ -103,7 +103,7 @@
           : null;
       }
 
-      console.log(hexToRgb("#0000ff"));
+      console.log(hexToRgb("#ffceb2"));
 
       function rgbToHSL(r, g, b) {
         r /= 255;
